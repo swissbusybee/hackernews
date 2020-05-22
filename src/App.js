@@ -20,6 +20,18 @@ const list = [
   },
 ];
 
+const largeColumn = {
+  width: '40%',
+};
+
+const midColumn = {
+  width: '30%',
+};
+
+const smallColumn = {
+  width: '10%',
+};
+
 const isSearched = searchTerm => item =>
   item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -29,7 +41,7 @@ class App extends Component {
 
     this.state = {
       list,
-      searchTerm: "",
+      searchTerm: '',
     };
 
     this.onSearchChange = this.onSearchChange.bind(this);
@@ -41,55 +53,82 @@ class App extends Component {
   }
 
   onDismiss(id) {
-    const isNotID = item => item.objectID !== id;
-    const updatedList = this.state.list.filter(isNotID);
+    const isNotId = item => item.objectID !== id;
+    const updatedList = this.state.list.filter(isNotId);
     this.setState({ list: updatedList });
   }
 
   render() {
-    function formatName(user) {
-      return user.firstName + ' ' + user.lastName
-    }
-
-    const user = {
-      firstName: "Sue",
-      lastName: "Rocha"
-    };
-
-    const helloWorld = "Howdy Cowgirl! Welcome to the Road to learn React"
-
     const { searchTerm, list } = this.state;
-
     return (
-      <div className="App">
-        <h2>{helloWorld} {user.firstName}</h2>
-        <h2>{helloWorld} {formatName(user)}</h2>
-        <ul>
-          <form>
-            <input
-              type="text"
-              onChange={this.onSearchChange}
-            />
-          </form>
-          {list.filter(isSearched(searchTerm)).map(item =>
-            <div key={item.objectID}>
-              <li><a href={item.url}>{item.title}</a></li>
-              <li>{item.num_comments}</li>
-              <li>{item.points}</li>
-              <li>{item.author}</li>
-              <li><button
-                onClick={() => this.onDismiss(item.objectID)}
-                type="button"
-              >
-                Dismiss
-                </button>
-              </li>
-            </div>
-          )}
-        </ul>
+      <div className="page">
+        <div className="interactions">
+          <Search
+            value={searchTerm}
+            onChange={this.onSearchChange}
+          >
+            Search
+          </Search>
+        </div>
+        <Table
+          list={list}
+          pattern={searchTerm}
+          onDismiss={this.onDismiss}
+        />
       </div>
     );
   }
 }
+
+const Search = ({ value, onChange, children }) =>
+  <form>
+    {children} <input
+      type="text"
+      value={value}
+      onChange={onChange}
+    />
+  </form>
+
+const Table = ({ list, pattern, onDismiss }) =>
+  <div className="table">
+    {list.filter(isSearched(pattern)).map(item =>
+      <div key={item.objectID} className="table-row">
+        <span style={largeColumn}>
+          <a href={item.url}>{item.title}</a>
+        </span>
+        <span style={midColumn}>
+          {item.author}
+        </span>
+        <span style={smallColumn}>
+          {item.num_comments}
+        </span>
+        <span style={smallColumn}>
+          {item.points}
+        </span>
+        <span style={smallColumn}>
+          <Button
+            onClick={() => onDismiss(item.objectID)}
+            className="button-inline"
+          >
+            Dismiss
+          </Button>
+        </span>
+      </div>
+    )}
+  </div>
+
+
+const Button = ({
+  onClick,
+  className = '',
+  children,
+}) =>
+  <button
+    onClick={onClick}
+    className={className}
+    type="button"
+  >
+    {children}
+  </button>
 
 export default App;
