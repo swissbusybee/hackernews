@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const DEFAULT_QUERY = "redux";
-const PATH_BASE = "https://hn.algoloa.com/api/v1";
-const PATH_SEARCH = "/search";
-const PARAM_SEARCH = "query=";
+const DEFAULT_QUERY = 'redux';
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
 
 const largeColumn = {
   width: '40%',
@@ -54,13 +54,14 @@ class App extends Component {
 
   onDismiss(id) {
     const isNotId = item => item.objectID !== id;
-    const updatedList = this.state.list.filter(isNotId);
-    this.setState({ list: updatedList });
+    const updatedList = this.state.result.hits.filter(isNotId);
+    this.setState({
+      result: { ...this.state.result, hits: updatedList }
+    });
   }
 
   render() {
     const { searchTerm, result } = this.state;
-    if (!result) { return null; }
 
     return (
       <div className="page">
@@ -72,11 +73,13 @@ class App extends Component {
             Search
           </Search>
         </div>
-        <Table
-          list={result.hits}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-        />
+        {result &&
+          <Table
+            list={result.hits}
+            pattern={searchTerm}
+            onDismiss={this.onDismiss}
+          />
+        }
       </div>
     );
   }
